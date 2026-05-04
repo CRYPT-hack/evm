@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Election Simulation{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <h1>⚡ Election Simulation</h1>
+    <p>
+      Generates a random election, sends data to the C++ verifier via Python subprocess,
+      and displays results with verification status — all in one click.
+    </p>
+  </div>
+
+  <div class="info-box">
+    <strong>How Simulation Works</strong>
+    Clicking the button below triggers a POST to <code>/run_simulation</code> in Flask.
+    Python resets current votes, randomly assigns votes for a random subset of voters,
+    writes <code>election_data.txt</code>, and calls the compiled C++ verifier.
+    Results are returned as JSON and rendered below without reloading the page.
+  </div>
+
+  <!-- ─── Simulation button ─────────────────────────────────────────────── -->
+  <div style="text-align:center;margin:2.5rem 0">
+    <button id="sim-btn" class="btn btn-primary btn-lg" style="padding:16px 40px;font-size:1.1rem">
+      ▶ Run Random Election Simulation
+    </button>
+    <p style="margin-top:.75rem;font-size:.82rem;color:var(--muted)">
+      ⚠ This resets all current votes. Existing data will be replaced by simulated data.
+    </p>
+  </div>
+
+  <!-- ─── Simulation output (hidden until run) ─────────────────────────── -->
+  <div id="sim-output">
+
+    <!-- Summary stats -->
+    <div class="stat-grid" style="margin-bottom:1.5rem">
+      <div class="stat-card blue">
+        <div class="stat-label">Votes Cast</div>
+        <div class="stat-value" id="sim-cast">—</div>
+        <div class="stat-sub">Simulated votes</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Registered Voters</div>
+        <div class="stat-value" id="sim-registered">—</div>
+        <div class="stat-sub">Total eligible</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">Turnout</div>
+        <div class="stat-value" id="sim-turnout">—</div>
+        <div class="stat-sub">Participation rate</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">C++ Verification</div>
+        <div class="stat-value" style="font-size:1rem;padding-top:.5rem">
+          <span id="sim-ver-status" class="badge badge-gray">Not run</span>
+        </div>
+        <div class="stat-sub">6 checks performed</div>
+      </div>
+    </div>
+
+    <!-- Candidate bars -->
+    <div class="card">
+      <div class="card-header">
+        <h2>📊 Simulation Vote Distribution</h2>
+        <div id="sim-winner" style="font-weight:700;color:var(--primary)"></div>
+      </div>
+      <div class="card-body">
+        <div id="sim-bars">
+          <!-- Rendered by JavaScript after simulation runs -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Link to full pages -->
+    <div style="margin-top:1.25rem;display:flex;gap:10px;flex-wrap:wrap">
+      <a href="{{ url_for('results') }}"      class="btn btn-primary">📈 Full Results Page</a>
+      <a href="{{ url_for('verification') }}" class="btn btn-outline">✔ Detailed Verification</a>
+      <a href="{{ url_for('audit') }}"        class="btn btn-outline">📋 Audit Log</a>
+      <a href="{{ url_for('report') }}"       class="btn btn-outline">📄 Final Report</a>
+    </div>
+  </div>
+
+  <!-- ─── Discrete math note ────────────────────────────────────────────── -->
+  <div class="section-title">What C++ Checks During Simulation</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem">
+    <div class="card card-body">
+      <div style="font-weight:700;color:var(--primary);margin-bottom:.4rem">1. Set Theory</div>
+      <p style="font-size:.85rem;color:var(--muted)">Verifies voter ID set has no duplicates using <code>std::set</code>.</p>
+    </div>
+    <div class="card card-body">
+      <div style="font-weight:700;color:var(--success);margin-bottom:.4rem">2. Functions</div>
+      <p style="font-size:.85rem;color:var(--muted)">Checks every vote maps to a valid candidate in the codomain.</p>
+    </div>
+    <div class="card card-body">
+      <div style="font-weight:700;color:var(--warning);margin-bottom:.4rem">3. Counting Principle</div>
+      <p style="font-size:.85rem;color:var(--muted)">Σ votes(cᵢ) must equal total valid votes cast.</p>
+    </div>
+    <div class="card card-body">
+      <div style="font-weight:700;color:var(--error);margin-bottom:.4rem">4. Logic Constraint</div>
+      <p style="font-size:.85rem;color:var(--muted)">All vote counts must satisfy votes(c) ≥ 0.</p>
+    </div>
+    <div class="card card-body">
+      <div style="font-weight:700;color:#7C3AED;margin-bottom:.4rem">5. Unique TXNs</div>
+      <p style="font-size:.85rem;color:var(--muted)">Transaction ID set must equal the number of vote records.</p>
+    </div>
+    <div class="card card-body">
+      <div style="font-weight:700;color:var(--text);margin-bottom:.4rem">6. Pigeonhole</div>
+      <p style="font-size:.85rem;color:var(--muted)">votes.size() ≤ registered_voters; otherwise contradiction.</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

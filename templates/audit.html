@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Audit Log{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <h1>📋 Audit Log</h1>
+    <p>Transparent record of all voting activity. Candidate selections are kept confidential — only timestamps and transaction IDs are shown publicly.</p>
+  </div>
+
+  <!-- Privacy note -->
+  <div class="info-box" style="margin-bottom:1.5rem">
+    <strong>Privacy Rule (Set Theory in use)</strong>
+    This log shows <em>who voted and when</em>, using the set of voter IDs as proof of participation.
+    The candidate selected by each voter is intentionally excluded to preserve ballot secrecy.
+    Transaction IDs uniquely identify each vote record.
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>📋 Vote Records</h2>
+      <span class="badge badge-blue">{{ audit_log | length }} Entries</span>
+    </div>
+
+    {% if audit_log %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Voter ID</th>
+            <th>Voter Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Transaction ID</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in audit_log %}
+          <tr>
+            <td style="color:var(--muted);font-size:.82rem">{{ loop.index }}</td>
+            <td><span class="font-mono" style="font-weight:600">{{ entry.voter_id }}</span></td>
+            <td>{{ entry.voter_name }}</td>
+            <td>{{ entry.date }}</td>
+            <td style="font-family:'Courier New',monospace">{{ entry.time }}</td>
+            <td>
+              <span class="font-mono" style="font-size:.82rem;background:var(--light);padding:3px 8px;border-radius:4px">
+                {{ entry.transaction_id }}
+              </span>
+            </td>
+            <td><span class="badge badge-green">{{ entry.status }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="card-body" style="text-align:center;padding:3rem;color:var(--muted)">
+      <div style="font-size:2.5rem;margin-bottom:1rem">📭</div>
+      <h3 style="font-weight:600;margin-bottom:.5rem">No votes recorded yet</h3>
+      <p style="font-size:.9rem">The audit log will appear here once voters begin casting votes.</p>
+      <div style="margin-top:1.5rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <a href="{{ url_for('login') }}"      class="btn btn-primary">Cast First Vote</a>
+        <a href="{{ url_for('simulation') }}" class="btn btn-outline">Run Simulation</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Discrete math note -->
+  {% if audit_log %}
+  <div style="margin-top:1rem;background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;font-size:.83rem;color:var(--muted)">
+    <strong>Discrete Math:</strong>
+    Transaction IDs form a <strong>set</strong> (all unique).
+    Voter IDs form a <strong>set</strong> (no duplicates allowed).
+    The C++ verifier checks |VoterID set| = |Vote records| to confirm no duplicates exist.
+    If these sets have different sizes, a duplicate vote is detected using <strong>Set Theory</strong>.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

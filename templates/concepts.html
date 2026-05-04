@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% block title %}Mathematical Concepts{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <h1>📐 Discrete Mathematics Concepts</h1>
+    <p>How discrete mathematics underpins every layer of this Electronic Voting System.</p>
+  </div>
+
+  <div class="info-box">
+    <strong>Project Context</strong>
+    Each concept below is directly implemented in the codebase.
+    Python (Flask) applies Set Theory and Functions in data management.
+    C++ (verifier.cpp) implements all six verification checks using these mathematical principles.
+  </div>
+
+  <div class="concept-grid">
+
+    <!-- Set Theory -->
+    <div class="concept-card">
+      <div class="concept-card-header" style="background:linear-gradient(135deg,#2563EB,#1D4ED8)">
+        <span style="font-size:1.4rem">🔷</span>
+        <span>Set Theory</span>
+        <span class="badge" style="margin-left:auto;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem">Checks 1 &amp; 4</span>
+      </div>
+      <div class="concept-card-body">
+        <p><strong>Where used:</strong> Storing unique voter IDs and transaction IDs to prevent duplicate voting.</p>
+        <div class="concept-formula">
+          V = {V001, V002, V003, ..., V010}<br>
+          |V| = 10 (10 unique registered voters)
+        </div>
+        <p><strong>Rule:</strong> Each voter ID must appear <em>exactly once</em> in the vote records set.
+           If a voter tries to vote again, their ID is already in set V — duplicate detected and rejected.</p>
+        <div class="concept-formula">
+          Duplicate check: |votes_set| = |votes_list|<br>
+          If not equal → duplicate voter exists
+        </div>
+        <p class="concept-example">
+          C++ Implementation: <code>std::set&lt;string&gt; seen_voters;</code>
+          — inserting into a set automatically enforces uniqueness.
+        </p>
+      </div>
+    </div>
+
+    <!-- Functions -->
+    <div class="concept-card">
+      <div class="concept-card-header" style="background:linear-gradient(135deg,#10B981,#059669)">
+        <span style="font-size:1.4rem">📎</span>
+        <span>Functions</span>
+        <span class="badge" style="margin-left:auto;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem">Check 2</span>
+      </div>
+      <div class="concept-card-body">
+        <p><strong>Where used:</strong> Mapping each Voter ID to exactly one Candidate ID (injective function).</p>
+        <div class="concept-formula">
+          f : VoterID → CandidateID<br>
+          f(V001) = C1 (Aman Sharma)<br>
+          f(V002) = C3 (Kabir Verma)
+        </div>
+        <p><strong>Injective property:</strong> Each voter maps to one candidate.
+           The codomain must be ⊆ valid_candidates.
+           Any vote outside this codomain is an invalid function mapping.</p>
+        <div class="concept-formula">
+          Valid: f(voter_id) ∈ {C1, C2, C3, C4}<br>
+          Invalid: f(voter_id) = C9 → rejected
+        </div>
+        <p class="concept-example">
+          Python: validates <code>candidate_id in valid_ids</code> before recording.
+          C++: checks each vote's candidate is in <code>valid_candidates</code> set.
+        </p>
+      </div>
+    </div>
+
+    <!-- Counting Principle -->
+    <div class="concept-card">
+      <div class="concept-card-header" style="background:linear-gradient(135deg,#F59E0B,#D97706)">
+        <span style="font-size:1.4rem">🔢</span>
+        <span>Counting Principle</span>
+        <span class="badge" style="margin-left:auto;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem">Check 5</span>
+      </div>
+      <div class="concept-card-body">
+        <p><strong>Where used:</strong> Counting total votes and verifying consistency of the count.</p>
+        <div class="concept-formula">
+          Total Votes = votes(C1) + votes(C2) + votes(C3) + votes(C4)<br>
+          Total = Σᵢ votes(cᵢ)
+        </div>
+        <p><strong>Addition Principle:</strong> The number of elements in a disjoint union equals the sum of sizes.
+           Each vote belongs to exactly one candidate, so summing per-candidate counts equals total votes.</p>
+        <div class="concept-formula">
+          Turnout = (Total Cast / Registered) × 100<br>
+          Margin  = Winner Votes − 2nd Highest Votes
+        </div>
+        <p class="concept-example">
+          C++ adds up vote_counts map values and compares to votes.size().
+          A mismatch means an invalid vote was included in a candidate total.
+        </p>
+      </div>
+    </div>
+
+    <!-- Logic -->
+    <div class="concept-card">
+      <div class="concept-card-header" style="background:linear-gradient(135deg,#EF4444,#DC2626)">
+        <span style="font-size:1.4rem">🧠</span>
+        <span>Propositional Logic</span>
+        <span class="badge" style="margin-left:auto;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem">All Checks</span>
+      </div>
+      <div class="concept-card-body">
+        <p><strong>Where used:</strong> Encoding vote validation rules as logical propositions.</p>
+        <div class="concept-formula">
+          P: voter has already voted<br>
+          Q: vote is accepted<br>
+          Rule: P → ¬Q (if voted, then reject)
+        </div>
+        <p><strong>Compound conditions:</strong> All six verification checks are expressed as logical AND of propositions.
+           The election result is valid only if all propositions evaluate to True.</p>
+        <div class="concept-formula">
+          Valid Election ⟺<br>
+          ¬Duplicate ∧ ValidCands ∧ ¬Negative<br>
+          ∧ UniqueTransactions ∧ Consistent ∧ ¬PHP_violated
+        </div>
+        <p class="concept-example">
+          C++: <code>bool all_pass = !has_duplicates &amp;&amp; !has_invalid_candidates &amp;&amp; ...</code>
+        </p>
+      </div>
+    </div>
+
+    <!-- Relations -->
+    <div class="concept-card">
+      <div class="concept-card-header" style="background:linear-gradient(135deg,#7C3AED,#6D28D9)">
+        <span style="font-size:1.4rem">🔗</span>
+        <span>Relations</span>
+        <span class="badge" style="margin-left:auto;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem">Data Model</span>
+      </div>
+      <div class="concept-card-body">
+        <p><strong>Where used:</strong> Representing the voting relation between voters and candidates.</p>
+        <div class="concept-formula">
+          R ⊆ VoterID × CandidateID<br>
+          R = {(V001, C1), (V002, C3), (V003, C2), ...}
+        </div>
+        <p><strong>Properties:</strong> The relation R is a function (not just a relation) because each voter ID
+           maps to at most one candidate ID — the vote is unique per voter.</p>
+        <div class="concept-formula">
+          ∀ (v, c₁), (v, c₂) ∈ R → c₁ = c₂<br>
+          (Each voter relates to at most one candidate)
+        </div>
+        <p class="concept-example">
+          votes.json stores the relation as an array of (voter_id, candidate_id) pairs.
+          C++ reads these pairs as VoteRecord structs.
+        </p>
+      </div>
+    </div>
+
+    <!-- Pigeonhole Principle -->
+    <div class="concept-card">
+      <div class="concept-card-header" style="background:linear-gradient(135deg,#0F172A,#1E293B)">
+        <span style="font-size:1.4rem">🕊</span>
+        <span>Pigeonhole Principle</span>
+        <span class="badge" style="margin-left:auto;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem">Check 6</span>
+      </div>
+      <div class="concept-card-body">
+        <p><strong>Principle:</strong> If n+1 items are placed into n containers, at least one container has more than one item.</p>
+        <div class="concept-formula">
+          n = registered voters (pigeonholes)<br>
+          k = votes cast (pigeons)<br>
+          If k > n → at least one voter voted twice
+        </div>
+        <p><strong>In this system:</strong> If total_votes > registered_voters, there are more votes than voters.
+           By the Pigeonhole Principle, at least one voter must have voted more than once.
+           This is a mathematical guarantee of fraud detection.</p>
+        <div class="concept-formula">
+          votes.size() > registered_voters<br>
+          → PHP violated → ERROR DETECTED
+        </div>
+        <p class="concept-example">
+          C++: <code>bool pigeonhole_violated = ((int)votes.size() > registered_voters);</code>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── Summary table ─────────────────────────────────────────────────── -->
+  <div class="section-title">Concept-to-Check Mapping</div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Discrete Math Concept</th><th>Applied In</th><th>Verification Check</th><th>Implementation</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Set Theory</td><td>Voter ID uniqueness</td><td>Check 1 &amp; 4</td><td>C++ <code>std::set</code></td></tr>
+          <tr><td>Functions</td><td>Voter → Candidate mapping</td><td>Check 2</td><td>C++ domain validation</td></tr>
+          <tr><td>Logic</td><td>Vote acceptance rules</td><td>All checks</td><td>C++ boolean expressions</td></tr>
+          <tr><td>Counting Principle</td><td>Vote tallying</td><td>Check 5</td><td>C++ map summation</td></tr>
+          <tr><td>Relations</td><td>(Voter, Candidate) pairs</td><td>Data model</td><td>votes.json + structs</td></tr>
+          <tr><td>Pigeonhole Principle</td><td>Fraud detection</td><td>Check 6</td><td>C++ size comparison</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

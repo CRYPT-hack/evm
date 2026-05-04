@@ -1,0 +1,12 @@
+[
+  {"id": "V001", "name": "Arjun Kumar",   "pin": "1234", "voted": false, "duplicate_attempts": 0},
+  {"id": "V002", "name": "Priya Sharma",  "pin": "2345", "voted": false, "duplicate_attempts": 0},
+  {"id": "V003", "name": "Rahul Verma",   "pin": "3456", "voted": false, "duplicate_attempts": 0},
+  {"id": "V004", "name": "Ananya Singh",  "pin": "4567", "voted": false, "duplicate_attempts": 0},
+  {"id": "V005", "name": "Vikram Patel",  "pin": "5678", "voted": false, "duplicate_attempts": 0},
+  {"id": "V006", "name": "Sneha Reddy",   "pin": "6789", "voted": false, "duplicate_attempts": 0},
+  {"id": "V007", "name": "Rohit Gupta",   "pin": "7890", "voted": false, "duplicate_attempts": 0},
+  {"id": "V008", "name": "Deepa Nair",    "pin": "8901", "voted": false, "duplicate_attempts": 0},
+  {"id": "V009", "name": "Aditya Joshi",  "pin": "9012", "voted": false, "duplicate_attempts": 0},
+  {"id": "V010", "name": "Kavya Iyer",    "pin": "0123", "voted": false, "duplicate_attempts": 0}
+]

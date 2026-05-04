@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Vote Confirmed{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="confirm-box">
+    <div class="big-check">✔</div>
+    <h2>Vote Submitted Successfully!</h2>
+    <p>Your vote has been recorded and verified. Keep your Transaction ID for reference.</p>
+
+    <div class="txn-id">{{ transaction_id }}</div>
+
+    <div style="background:var(--light);border-radius:var(--radius);padding:1rem;font-size:.83rem;color:var(--muted);margin-bottom:1.5rem;text-align:left">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span>Transaction ID</span>
+        <strong style="font-family:'Courier New',monospace">{{ transaction_id }}</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span>Status</span>
+        <span class="badge badge-green">Verified</span>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span>Privacy</span>
+        <span style="color:var(--success);font-weight:600">Candidate Confidential</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <a href="{{ url_for('audit') }}"   class="btn btn-outline-primary btn-block">📋 View Audit Log</a>
+      <a href="{{ url_for('results') }}" class="btn btn-primary btn-block">📈 View Results</a>
+      <a href="{{ url_for('index') }}"   class="btn btn-ghost btn-block">← Back to Home</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

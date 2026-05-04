@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <h1>📊 Admin Dashboard</h1>
+    <p>Real-time election statistics and control panel. Python Flask reads all JSON data files to build this view.</p>
+  </div>
+
+  <!-- ─── Status banner ─────────────────────────────────────────────────── -->
+  <div style="background:{% if stats.voting_status == 'Open' %}var(--success){% else %}var(--error){% endif %};
+              color:#fff;border-radius:var(--radius-lg);padding:1rem 1.5rem;
+              display:flex;align-items:center;gap:12px;margin-bottom:1.5rem">
+    <span style="font-size:1.5rem">{% if stats.voting_status == 'Open' %}🟢{% else %}🔴{% endif %}</span>
+    <div>
+      <strong style="font-size:1.05rem">Voting Status: {{ stats.voting_status }}</strong>
+      <div style="opacity:.85;font-size:.88rem">
+        {% if stats.voting_status == 'Open' %}
+          {{ stats.remaining }} voter(s) have not yet cast their vote.
+        {% else %}
+          All registered voters have cast their votes.
+        {% endif %}
+      </div>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <div style="font-size:1.8rem;font-weight:800">{{ stats.turnout }}%</div>
+      <div style="font-size:.75rem;opacity:.8">Turnout</div>
+    </div>
+  </div>
+
+  <!-- ─── Stat cards ────────────────────────────────────────────────────── -->
+  <div class="stat-grid" style="margin-bottom:1.5rem">
+    <div class="stat-card blue">
+      <div class="stat-label">Registered Voters</div>
+      <div class="stat-value">{{ stats.total_registered }}</div>
+      <div class="stat-sub">Total eligible voters</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Votes Cast</div>
+      <div class="stat-value">{{ stats.total_votes }}</div>
+      <div class="stat-sub">Valid votes recorded</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-label">Remaining</div>
+      <div class="stat-value">{{ stats.remaining }}</div>
+      <div class="stat-sub">Yet to vote</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Duplicate Attempts</div>
+      <div class="stat-value">{{ stats.duplicate_attempts }}</div>
+      <div class="stat-sub">Blocked by Set Theory</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Invalid Attempts</div>
+      <div class="stat-value">{{ stats.invalid_attempts }}</div>
+      <div class="stat-sub">Rejected by logic check</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Candidates</div>
+      <div class="stat-value">{{ stats.total_candidates }}</div>
+      <div class="stat-sub">Running in election</div>
+    </div>
+  </div>
+
+  <!-- ─── Turnout progress bar ──────────────────────────────────────────── -->
+  <div class="card card-body" style="margin-bottom:1.5rem">
+    <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;font-weight:600">
+      <span>Voter Turnout</span>
+      <span class="text-primary">{{ stats.total_votes }} / {{ stats.total_registered }}</span>
+    </div>
+    <div class="vote-bar-track" style="height:18px">
+      <div class="vote-bar-fill"
+           style="background:var(--primary)"
+           data-pct="{{ stats.turnout }}"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:.4rem">
+      <span>0%</span>
+      <strong style="color:var(--primary)">{{ stats.turnout }}% Turnout</strong>
+      <span>100%</span>
+    </div>
+  </div>
+
+  <!-- ─── Control buttons ───────────────────────────────────────────────── -->
+  <div class="section-title">Controls</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:2rem">
+    <a href="{{ url_for('verification') }}" class="btn btn-primary">✔ Verify Result</a>
+    <a href="{{ url_for('audit') }}"        class="btn btn-outline">📋 View Audit Log</a>
+    <a href="{{ url_for('report') }}"       class="btn btn-outline">📄 Final Report</a>
+    <a href="{{ url_for('results') }}"      class="btn btn-outline">📈 Live Results</a>
+    <a href="{{ url_for('simulation') }}"   class="btn btn-outline">⚡ Run Simulation</a>
+    <form method="POST" action="{{ url_for('reset') }}" id="reset-form" style="display:inline">
+      <button type="submit" class="btn btn-error">🔄 Reset Simulation</button>
+    </form>
+  </div>
+
+  <!-- ─── Architecture note ────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header"><h2>⚙ System Architecture</h2></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem">
+        <div>
+          <h4 style="font-weight:700;color:var(--primary);margin-bottom:.5rem">🐍 Python Flask</h4>
+          <ul style="list-style:none;font-size:.88rem;color:var(--muted);line-height:2">
+            <li>✔ HTTP routing and session management</li>
+            <li>✔ Voter authentication and vote recording</li>
+            <li>✔ JSON file read/write (voters, votes)</li>
+            <li>✔ Subprocess call to C++ verifier</li>
+            <li>✔ Template rendering with Jinja2</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-weight:700;color:var(--success);margin-bottom:.5rem">⚙ C++ Verifier</h4>
+          <ul style="list-style:none;font-size:.88rem;color:var(--muted);line-height:2">
+            <li>✔ Vote counting (Counting Principle)</li>
+            <li>✔ Duplicate detection (Set Theory)</li>
+            <li>✔ Candidate validation (Functions)</li>
+            <li>✔ Pigeonhole Principle check</li>
+            <li>✔ Winner and margin calculation</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-weight:700;color:var(--warning);margin-bottom:.5rem">📁 Data Files</h4>
+          <ul style="list-style:none;font-size:.88rem;color:var(--muted);line-height:2">
+            <li>📄 voters.json — Voter registry</li>
+            <li>📄 votes.json — Vote records</li>
+            <li>📄 candidates.json — Candidate list</li>
+            <li>📄 election_data.txt — C++ input</li>
+            <li>📄 stats.json — Attempt counters</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

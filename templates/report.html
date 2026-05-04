@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %}Final Report{% endblock %}
+
+{% block content %}
+<div class="main">
+
+  <!-- ─── Report header ─────────────────────────────────────────────────── -->
+  <div class="report-header">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div>
+        <div style="font-size:.78rem;letter-spacing:.8px;text-transform:uppercase;color:#60A5FA;font-weight:700;margin-bottom:.4rem">
+          Official Election Report
+        </div>
+        <h1>{{ report.election_name }}</h1>
+        <p>Discrete Mathematics Simulation — Educational Project</p>
+      </div>
+      <div>
+        {% if report.verification_status == 'PASS' %}
+          <span class="badge badge-green" style="font-size:.85rem;padding:6px 14px">✔ Verified</span>
+        {% elif report.verification_status == 'NOT_RUN' %}
+          <span class="badge badge-gray"  style="font-size:.85rem;padding:6px 14px">⚠ Not Verified</span>
+        {% else %}
+          <span class="badge badge-red"   style="font-size:.85rem;padding:6px 14px">✖ Failed</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="report-meta">
+      <div class="m"><strong>Generated</strong>{{ report.generated_at }}</div>
+      <div class="m"><strong>Registered Voters</strong>{{ report.total_registered }}</div>
+      <div class="m"><strong>Votes Cast</strong>{{ report.total_votes }}</div>
+      <div class="m"><strong>Turnout</strong>{{ report.turnout }}%</div>
+      <div class="m"><strong>Verification</strong>{{ report.verification_status }}</div>
+    </div>
+  </div>
+
+  <!-- ─── Winner section ────────────────────────────────────────────────── -->
+  {% if report.total_votes == 0 %}
+    <div class="info-box" style="text-align:center;padding:2rem;margin-bottom:1.5rem">
+      <strong>No votes recorded.</strong> Cast votes or run simulation first.
+    </div>
+  {% elif report.is_tie %}
+    <div class="winner-banner" style="background:linear-gradient(135deg,#7C3AED,#6D28D9);margin-bottom:1.5rem">
+      <div class="trophy">⚖</div>
+      <h2>Result: Tie Declared</h2>
+      <p>Two or more candidates received equal highest votes. A runoff election may be required.</p>
+    </div>
+  {% else %}
+    <div class="winner-banner" style="margin-bottom:1.5rem">
+      <div class="trophy">🏆</div>
+      <h2>{{ report.winner.name }} — Elected!</h2>
+      <p>{{ report.winner.party }} &nbsp;·&nbsp; Symbol: {{ report.winner.symbol }}</p>
+      <div class="winner-meta">
+        <div class="m"><div class="v">{{ report.winner.votes }}</div><div class="l">Votes Won</div></div>
+        <div class="m"><div class="v">{{ report.winning_margin }}</div><div class="l">Winning Margin</div></div>
+        <div class="m"><div class="v">{{ report.turnout }}%</div><div class="l">Voter Turnout</div></div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- ─── Key statistics ────────────────────────────────────────────────── -->
+  <div class="section-title">Election Statistics</div>
+  <div class="stat-grid" style="margin-bottom:1.5rem">
+    <div class="stat-card blue">
+      <div class="stat-label">Registered Voters</div>
+      <div class="stat-value">{{ report.total_registered }}</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Total Votes Cast</div>
+      <div class="stat-value">{{ report.total_votes }}</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Turnout</div>
+      <div class="stat-value">{{ report.turnout }}%</div>
+    </div>
+    <div class="stat-card {% if report.verification_status == 'PASS' %}green{% else %}red{% endif %}">
+      <div class="stat-label">Verification</div>
+      <div class="stat-value" style="font-size:1.1rem;padding-top:.4rem">{{ report.verification_status }}</div>
+    </div>
+  </div>
+
+  <!-- ─── Candidate results table ───────────────────────────────────────── -->
+  <div class="section-title">Candidate-wise Results</div>
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Candidate</th>
+            <th>Party</th>
+            <th>Symbol</th>
+            <th>Votes</th>
+            <th>Share</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in report.sorted_results %}
+          {% set share = ((r.votes / report.total_votes * 100) | round(1)) if report.total_votes > 0 else 0 %}
+          <tr {% if not report.is_tie and report.winner and r.id == report.winner.id %}style="background:#FFFBEB"{% endif %}>
+            <td style="font-weight:700;color:var(--muted)">{{ loop.index }}</td>
+            <td style="font-weight:700">{{ r.name }}</td>
+            <td style="font-size:.85rem;color:var(--muted)">{{ r.party }}</td>
+            <td>{{ r.symbol }}</td>
+            <td style="font-weight:800;color:var(--primary);font-size:1.05rem">{{ r.votes }}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:60px;height:8px;background:var(--light);border-radius:4px;overflow:hidden">
+                  <div class="vote-bar-fill" style="background:{{ r.color }}" data-pct="{{ share }}"></div>
+                </div>
+                <span style="font-size:.85rem">{{ share }}%</span>
+              </div>
+            </td>
+            <td>
+              {% if not report.is_tie and report.winner and r.id == report.winner.id %}
+                <span class="badge badge-amber">🏆 Winner</span>
+              {% elif loop.index == 1 and report.is_tie %}
+                <span class="badge badge-purple">⚖ Tied</span>
+              {% else %}
+                <span class="badge badge-gray">Runner-up</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── Formulas applied ──────────────────────────────────────────────── -->
+  <div class="section-title">Discrete Mathematics Formulas Applied</div>
+  <div class="card card-body" style="margin-bottom:1.5rem">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.4rem">Total Votes (Counting Principle)</div>
+        <div class="concept-formula">Total = Σ votes(cᵢ) = {{ report.total_votes }}</div>
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.4rem">Voter Turnout</div>
+        <div class="concept-formula">{{ report.total_votes }} / {{ report.total_registered }} × 100 = {{ report.turnout }}%</div>
+      </div>
+      {% if not report.is_tie and report.winner %}
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.4rem">Winning Margin</div>
+        <div class="concept-formula">Winner − 2nd Highest = {{ report.winning_margin }}</div>
+      </div>
+      {% endif %}
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.4rem">Pigeonhole Check</div>
+        <div class="concept-formula">{{ report.total_votes }} ≤ {{ report.total_registered }} → {% if report.total_votes <= report.total_registered %}✔ OK{% else %}✖ Violated{% endif %}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── C++ verification detail ──────────────────────────────────────── -->
+  {% if verifier and verifier.get('ALL_CHECKS') %}
+  <div class="section-title">C++ Verification Summary</div>
+  <div class="card card-body" style="margin-bottom:1.5rem">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem">
+      {% set chk_keys = [
+        ('CHECK_DUPLICATE', 'Duplicate Voter IDs'),
+        ('CHECK_VALID_CANDIDATES', 'Valid Candidates'),
+        ('CHECK_NO_NEGATIVE', 'No Negative Votes'),
+        ('CHECK_UNIQUE_TRANSACTIONS', 'Unique Transactions'),
+        ('CHECK_CONSISTENCY', 'Vote Consistency'),
+        ('CHECK_PIGEONHOLE', 'Pigeonhole Principle'),
+      ] %}
+      {% for key, label in chk_keys %}
+      {% set v = verifier.get(key, 'N/A') %}
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:var(--light)">
+        <span>{% if v == 'PASS' %}✔{% elif v == 'FAIL' %}✖{% else %}?{% endif %}</span>
+        <span style="font-size:.83rem;flex:1">{{ label }}</span>
+        <span class="badge {% if v == 'PASS' %}badge-green{% elif v == 'FAIL' %}badge-red{% else %}badge-gray{% endif %}">{{ v }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Actions -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a href="{{ url_for('results') }}"      class="btn btn-primary">📈 Results</a>
+    <a href="{{ url_for('verification') }}" class="btn btn-outline">✔ Verification</a>
+    <a href="{{ url_for('audit') }}"        class="btn btn-outline">📋 Audit Log</a>
+    <a href="{{ url_for('dashboard') }}"    class="btn btn-outline">📊 Dashboard</a>
+  </div>
+
+</div>
+{% endblock %}

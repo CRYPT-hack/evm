@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- ═══ HERO ═══════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Discrete Mathematics · College Project 2026</div>
+    <h1>Electronic Voting System<br><span>Verified by Discrete Mathematics</span></h1>
+    <p>
+      A secure, transparent simulation that counts votes using the
+      <strong>Counting Principle</strong>, prevents duplicates with
+      <strong>Set Theory</strong>, and verifies results through
+      <strong>logical consistency checks</strong> in C++.
+    </p>
+    <div class="hero-buttons">
+      <a href="{{ url_for('login') }}"        class="btn btn-primary btn-lg">🗳 Cast Your Vote</a>
+      <a href="{{ url_for('dashboard') }}"    class="btn btn-outline btn-lg" style="color:#fff;border-color:rgba(255,255,255,.35)">📊 Admin Dashboard</a>
+      <a href="{{ url_for('results') }}"      class="btn btn-outline btn-lg" style="color:#fff;border-color:rgba(255,255,255,.35)">📈 View Results</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat-item">
+        <div class="val">{{ summary.registered }}</div>
+        <div class="lbl">Registered Voters</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="val">{{ summary.cast }}</div>
+        <div class="lbl">Votes Cast</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="val">{{ summary.remaining }}</div>
+        <div class="lbl">Yet to Vote</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="val">4</div>
+        <div class="lbl">Candidates</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ QUICK NAVIGATION ══════════════════════════════════════════════════ -->
+<div class="main">
+  <div class="section-title">Quick Navigation</div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:2rem">
+
+    <a href="{{ url_for('login') }}" style="text-decoration:none">
+      <div class="card" style="padding:1.5rem;transition:.2s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.75rem">🗳</div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:.3rem">Cast Vote</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Login with your Voter ID, Name, and PIN to cast your vote securely.</p>
+      </div>
+    </a>
+
+    <a href="{{ url_for('dashboard') }}" style="text-decoration:none">
+      <div class="card" style="padding:1.5rem;transition:.2s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.75rem">📊</div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:.3rem">Admin Dashboard</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Monitor election statistics, voter turnout, and voting status in real time.</p>
+      </div>
+    </a>
+
+    <a href="{{ url_for('results') }}" style="text-decoration:none">
+      <div class="card" style="padding:1.5rem;transition:.2s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.75rem">📈</div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:.3rem">View Results</h3>
+        <p style="font-size:.85rem;color:var(--muted)">See live vote counts, winner, winning margin, and turnout percentage.</p>
+      </div>
+    </a>
+
+    <a href="{{ url_for('verification') }}" style="text-decoration:none">
+      <div class="card" style="padding:1.5rem;transition:.2s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.75rem">✔</div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:.3rem">Verification Checks</h3>
+        <p style="font-size:.85rem;color:var(--muted)">C++ runs 6 discrete math checks to verify election integrity.</p>
+      </div>
+    </a>
+
+    <a href="{{ url_for('concepts') }}" style="text-decoration:none">
+      <div class="card" style="padding:1.5rem;transition:.2s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.75rem">📐</div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:.3rem">Mathematical Concepts</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Explore Set Theory, Functions, Logic, and the Pigeonhole Principle.</p>
+      </div>
+    </a>
+
+    <a href="{{ url_for('simulation') }}" style="text-decoration:none">
+      <div class="card" style="padding:1.5rem;transition:.2s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:2rem;margin-bottom:.75rem">⚡</div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:.3rem">Run Simulation</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Generate a random election, count votes via C++, and verify result instantly.</p>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ─── How it works ──────────────────────────────────────────────────── -->
+  <div class="section-title">How it Works</div>
+  <div class="card card-body" style="padding:1.75rem">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem">
+      <div>
+        <div style="font-size:1.5rem;margin-bottom:.5rem">1️⃣</div>
+        <h4 style="font-weight:700;margin-bottom:.3rem">Voter Logs In</h4>
+        <p style="font-size:.85rem;color:var(--muted)">Voter enters ID, name, and PIN. Python Flask validates credentials against <code>voters.json</code>.</p>
+      </div>
+      <div>
+        <div style="font-size:1.5rem;margin-bottom:.5rem">2️⃣</div>
+        <h4 style="font-weight:700;margin-bottom:.3rem">Vote is Cast</h4>
+        <p style="font-size:.85rem;color:var(--muted)">Voter selects a candidate. Flask records voter ID, candidate, timestamp, and a unique transaction ID in <code>votes.json</code>.</p>
+      </div>
+      <div>
+        <div style="font-size:1.5rem;margin-bottom:.5rem">3️⃣</div>
+        <h4 style="font-weight:700;margin-bottom:.3rem">C++ Verifies</h4>
+        <p style="font-size:.85rem;color:var(--muted)">Python calls the compiled C++ verifier via <code>subprocess</code>. C++ applies 6 discrete math checks and returns results.</p>
+      </div>
+      <div>
+        <div style="font-size:1.5rem;margin-bottom:.5rem">4️⃣</div>
+        <h4 style="font-weight:700;margin-bottom:.3rem">Results Displayed</h4>
+        <p style="font-size:.85rem;color:var(--muted)">Flask reads C++ output, calculates winner using counting principle, and renders the results page.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Voter credentials table ───────────────────────────────────────── -->
+  <div class="section-title">Sample Voter Credentials</div>
+  <div class="card">
+    <div class="card-header">
+      <h2>🔑 Registered Voters (for testing)</h2>
+      <span class="badge badge-blue">10 Voters</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Voter ID</th><th>Name</th><th>PIN</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-mono">V001</td><td>Arjun Kumar</td>  <td class="font-mono">1234</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V002</td><td>Priya Sharma</td> <td class="font-mono">2345</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V003</td><td>Rahul Verma</td>  <td class="font-mono">3456</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V004</td><td>Ananya Singh</td> <td class="font-mono">4567</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V005</td><td>Vikram Patel</td> <td class="font-mono">5678</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V006</td><td>Sneha Reddy</td>  <td class="font-mono">6789</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V007</td><td>Rohit Gupta</td>  <td class="font-mono">7890</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V008</td><td>Deepa Nair</td>   <td class="font-mono">8901</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V009</td><td>Aditya Joshi</td> <td class="font-mono">9012</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td class="font-mono">V010</td><td>Kavya Iyer</td>   <td class="font-mono">0123</td><td><span class="badge badge-green">Active</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Election Results{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <h1>📈 Election Results</h1>
+    <p>Live vote counts computed by Python. Winner and margin verified by C++ using Counting Principle and logical checks.</p>
+  </div>
+
+  <!-- ─── Winner / Tie banner ───────────────────────────────────────────── -->
+  {% if total_votes == 0 %}
+    <div class="info-box" style="text-align:center;padding:2rem">
+      <strong style="font-size:1.1rem">No votes cast yet.</strong><br>
+      <span>Cast votes or run the simulation to see results.</span>
+    </div>
+  {% elif is_tie %}
+    <div class="winner-banner" style="background:linear-gradient(135deg,#7C3AED,#6D28D9)">
+      <div class="trophy">⚖</div>
+      <h2>It's a Tie!</h2>
+      <p>Two or more candidates received equal votes. A runoff may be required.</p>
+      <div class="winner-meta">
+        <div class="m"><div class="v">{{ total_votes }}</div><div class="l">Total Votes</div></div>
+        <div class="m"><div class="v">{{ turnout }}%</div><div class="l">Turnout</div></div>
+      </div>
+    </div>
+  {% else %}
+    <div class="winner-banner">
+      <div class="trophy">🏆</div>
+      <h2>{{ winner.name }} Wins!</h2>
+      <p>Symbol: {{ winner.symbol }} &nbsp;·&nbsp; {{ winner.party }}</p>
+      <div class="winner-meta">
+        <div class="m"><div class="v">{{ winner.votes }}</div><div class="l">Votes Won</div></div>
+        <div class="m"><div class="v">{{ winning_margin }}</div><div class="l">Winning Margin</div></div>
+        <div class="m"><div class="v">{{ total_votes }}</div><div class="l">Total Votes</div></div>
+        <div class="m"><div class="v">{{ turnout }}%</div><div class="l">Turnout</div></div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- ─── Formulas ──────────────────────────────────────────────────────── -->
+  <div class="card card-body" style="margin-bottom:1.5rem">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:.4rem">Total Votes (Counting Principle)</div>
+        <div class="concept-formula">Total = Σ votes(candidate_i)</div>
+        <div style="font-size:.85rem;color:var(--primary);font-weight:600">= {{ total_votes }}</div>
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:.4rem">Turnout Percentage</div>
+        <div class="concept-formula">Turnout = (Votes Cast / Registered) × 100</div>
+        <div style="font-size:.85rem;color:var(--primary);font-weight:600">= {{ total_votes }} / {{ total_registered }} × 100 = {{ turnout }}%</div>
+      </div>
+      {% if not is_tie and winner %}
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:.4rem">Winning Margin</div>
+        <div class="concept-formula">Margin = Winner Votes − 2nd Highest</div>
+        <div style="font-size:.85rem;color:var(--primary);font-weight:600">= {{ winning_margin }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ─── Per-candidate results ─────────────────────────────────────────── -->
+  <div class="section-title">Candidate Results</div>
+
+  {% for r in sorted_results %}
+  {% set rank = loop.index %}
+  {% set pct = ((r.votes / total_votes * 100) | round(1)) if total_votes > 0 else 0 %}
+  <div class="result-card {% if not is_tie and winner and r.id == winner.id %}winner-card{% endif %}">
+    <div class="result-top">
+      <div class="result-rank r{{ rank }}">{{ rank }}</div>
+      <div>
+        <div class="result-name">
+          {% if r.symbol == 'Star'  %}⭐{% endif %}
+          {% if r.symbol == 'Sun'   %}☀️{% endif %}
+          {% if r.symbol == 'Tree'  %}🌳{% endif %}
+          {% if r.symbol == 'Lotus' %}🌸{% endif %}
+          {{ r.name }}
+          {% if not is_tie and winner and r.id == winner.id %}
+            <span class="badge badge-amber" style="margin-left:6px">🏆 Winner</span>
+          {% endif %}
+        </div>
+        <div class="result-party">{{ r.party }} &nbsp;·&nbsp; ID: {{ r.id }}</div>
+      </div>
+      <div class="result-votes">
+        <div class="num">{{ r.votes }}</div>
+        <div class="lbl">votes</div>
+      </div>
+    </div>
+    <div class="vote-bar-wrap">
+      <div class="vote-bar-label">
+        <span>{{ r.symbol }}</span>
+        <span>{{ pct }}%</span>
+      </div>
+      <div class="vote-bar-track">
+        <div class="vote-bar-fill" style="background:{{ r.color }}" data-pct="{{ pct }}"></div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- ─── Action buttons ────────────────────────────────────────────────── -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:1.5rem">
+    <a href="{{ url_for('verification') }}" class="btn btn-primary">✔ Verify with C++</a>
+    <a href="{{ url_for('report') }}"       class="btn btn-outline">📄 Full Report</a>
+    <a href="{{ url_for('audit') }}"        class="btn btn-outline">📋 Audit Log</a>
+  </div>
+</div>
+{% endblock %}

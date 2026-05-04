@@ -1,0 +1,6 @@
+[
+  {"id": "C1", "name": "Aman Sharma",  "symbol": "Star",  "party": "Progressive Alliance",   "color": "#2563EB"},
+  {"id": "C2", "name": "Riya Mehta",   "symbol": "Sun",   "party": "Democratic Front",        "color": "#F59E0B"},
+  {"id": "C3", "name": "Kabir Verma",  "symbol": "Tree",  "party": "Green Development Party", "color": "#10B981"},
+  {"id": "C4", "name": "Neha Singh",   "symbol": "Lotus", "party": "National Unity Party",    "color": "#EC4899"}
+]

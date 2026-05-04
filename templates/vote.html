@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Cast Vote{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <h1>🗳 Cast Your Vote</h1>
+    <p>Welcome, <strong>{{ voter_name }}</strong>. Select one candidate and submit your vote. This action cannot be undone.</p>
+  </div>
+
+  <div style="max-width:900px;margin:0 auto">
+
+    <div class="info-box">
+      <strong>Instructions</strong>
+      Click a candidate card to select them. Your selection is highlighted in blue.
+      Click <em>Submit Vote</em> to confirm. Each voter may vote only once.
+    </div>
+
+    <form method="POST" action="{{ url_for('vote') }}" id="vote-form">
+      <!-- Candidate cards -->
+      <div class="candidate-grid">
+        {% for c in candidates %}
+        <label class="candidate-card" for="cand_{{ c.id }}">
+          <input type="radio" name="candidate_id" id="cand_{{ c.id }}" value="{{ c.id }}" required>
+          <div class="selected-check">✔</div>
+          <div class="candidate-symbol">
+            {% if c.symbol == 'Star'  %}⭐{% endif %}
+            {% if c.symbol == 'Sun'   %}☀️{% endif %}
+            {% if c.symbol == 'Tree'  %}🌳{% endif %}
+            {% if c.symbol == 'Lotus' %}🌸{% endif %}
+          </div>
+          <div class="candidate-name">{{ c.name }}</div>
+          <div class="candidate-id">{{ c.id }}</div>
+          <div class="candidate-party">{{ c.party }}</div>
+          <div style="margin-top:.5rem">
+            <span class="badge badge-gray">Symbol: {{ c.symbol }}</span>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+
+      <!-- Submit -->
+      <div style="text-align:center;margin-top:1.5rem">
+        <button type="submit" class="btn btn-success btn-lg"
+                onclick="return confirm('Confirm your vote? This cannot be changed.')">
+          ✔ Submit Vote
+        </button>
+        <a href="{{ url_for('index') }}" class="btn btn-ghost btn-lg" style="margin-left:10px">Cancel</a>
+      </div>
+    </form>
+
+    <!-- Privacy note -->
+    <div style="margin-top:1.5rem;background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;font-size:.82rem;color:var(--muted);text-align:center">
+      🔒 <strong>Privacy Guarantee:</strong> Your candidate selection is stored securely.
+      The public audit log records only that you voted — not <em>which</em> candidate you chose.
+      This system uses a <strong>Function mapping</strong>: f(Voter ID) → Candidate, recorded privately.
+    </div>
+  </div>
+</div>
+{% endblock %}

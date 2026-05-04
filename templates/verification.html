@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}Verification Checks{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <h1>✔ C++ Verification Checks</h1>
+    <p>
+      Python calls the compiled <code>verifier.cpp</code> via <code>subprocess</code>.
+      C++ applies 6 discrete mathematics checks and returns results.
+      Python reads the output and renders this page.
+    </p>
+  </div>
+
+  {% if result.get('ERROR') %}
+  <!-- C++ not compiled -->
+  <div class="card card-body" style="border-left:4px solid var(--error);background:#FEF2F2">
+    <h3 style="color:var(--error);margin-bottom:.5rem">⚠ C++ Verifier Not Found</h3>
+    <p style="color:#991B1B;margin-bottom:1rem">{{ result.ERROR }}</p>
+    {% if result.get('HINT') %}
+    <div class="concept-formula">{{ result.HINT }}</div>
+    {% endif %}
+    <p style="font-size:.85rem;color:var(--muted);margin-top:.75rem">
+      Compile <code>verifier.cpp</code> first. See README.md for instructions.
+    </p>
+  </div>
+
+  {% else %}
+  <!-- Overall verdict -->
+  {% set all_pass = result.get('ALL_CHECKS') == 'PASS' %}
+  <div style="background:{% if all_pass %}var(--success){% else %}var(--error){% endif %};
+              color:#fff;border-radius:var(--radius-lg);padding:1.5rem 2rem;
+              display:flex;align-items:center;gap:16px;margin-bottom:1.5rem;
+              box-shadow:var(--shadow-lg)">
+    <span style="font-size:2.5rem">{% if all_pass %}✔{% else %}✖{% endif %}</span>
+    <div>
+      <h2 style="font-size:1.3rem;font-weight:800">
+        {% if all_pass %}Election Result Verified Successfully.{% else %}Verification Failed — Inconsistency Detected.{% endif %}
+      </h2>
+      <p style="opacity:.85;font-size:.9rem">
+        Total votes analysed: {{ total_votes }} &nbsp;|&nbsp;
+        C++ verifier processed election_data.txt and returned results via stdout.
+      </p>
+    </div>
+  </div>
+
+  <!-- ─── Six checks ────────────────────────────────────────────────────── -->
+  {% set checks = [
+    {
+      'key':   'CHECK_DUPLICATE',
+      'title': 'Check 1: Duplicate Voter IDs',
+      'concept': 'Set Theory',
+      'desc':  'Voter ID set S must satisfy |S| = |votes|. If a voter ID appears more than once, the set size shrinks — contradiction detected.',
+      'formula': 'No voter_id repeats in set V = {v₁, v₂, ..., vₙ}'
+    },
+    {
+      'key':   'CHECK_VALID_CANDIDATES',
+      'title': 'Check 2: Valid Candidate IDs',
+      'concept': 'Functions (Domain Check)',
+      'desc':  'Vote function f: VoterID → CandidateID must map into the valid codomain. Any vote pointing outside the candidate set is rejected.',
+      'formula': '∀ vote v, v.candidate_id ∈ valid_candidates'
+    },
+    {
+      'key':   'CHECK_NO_NEGATIVE',
+      'title': 'Check 3: No Negative Votes',
+      'concept': 'Logic (Constraint)',
+      'desc':  'A logical constraint: vote counts must be non-negative integers. Negative values are logically impossible in this domain.',
+      'formula': '∀ candidate c, votes(c) ≥ 0'
+    },
+    {
+      'key':   'CHECK_UNIQUE_TRANSACTIONS',
+      'title': 'Check 4: Unique Transaction IDs',
+      'concept': 'Set Theory (Injection)',
+      'desc':  'Transaction IDs form a set — each must be unique. Duplicate transaction IDs indicate tampered or replayed vote records.',
+      'formula': '|{transaction_ids}| = |votes|'
+    },
+    {
+      'key':   'CHECK_CONSISTENCY',
+      'title': 'Check 5: Total Vote Consistency',
+      'concept': 'Counting / Addition Principle',
+      'desc':  'By the Addition Principle, the sum of per-candidate votes must equal the total valid votes cast. Any mismatch means a counting error.',
+      'formula': 'Σ votes(cᵢ) = Total Valid Votes Cast'
+    },
+    {
+      'key':   'CHECK_PIGEONHOLE',
+      'title': 'Check 6: Pigeonhole Principle',
+      'concept': 'Pigeonhole Principle',
+      'desc':  'If more votes exist than registered voters, at least one voter voted twice. This violates the bijection between voters and votes.',
+      'formula': 'votes ≤ registered_voters (else contradiction by PHP)'
+    }
+  ] %}
+
+  {% for chk in checks %}
+  {% set status = result.get(chk.key, 'N/A') %}
+  {% set passed = status == 'PASS' %}
+  <div class="check-row">
+    <div class="check-icon {% if passed %}pass{% elif status == 'N/A' %}skip{% else %}fail{% endif %}">
+      {% if passed %}✔{% elif status == 'N/A' %}?{% else %}✖{% endif %}
+    </div>
+    <div class="check-info" style="flex:1">
+      <h4>{{ chk.title }}</h4>
+      <p>{{ chk.desc }}</p>
+      <div class="concept-formula" style="margin-top:.5rem">{{ chk.formula }}</div>
+    </div>
+    <div class="check-status">
+      <div style="text-align:right;margin-bottom:4px">
+        <span class="badge {% if passed %}badge-green{% elif status == 'N/A' %}badge-gray{% else %}badge-red{% endif %}">
+          {{ status }}
+        </span>
+      </div>
+      <div style="font-size:.75rem;color:var(--muted);text-align:right">{{ chk.concept }}</div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- ─── C++ output stats ───────────────────────────────────────────────── -->
+  {% if result.get('TOTAL_VOTES') %}
+  <div class="section-title">C++ Computed Statistics</div>
+  <div class="card card-body">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem">
+      <div>
+        <div class="stat-label" style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total Votes</div>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--primary)">{{ result.get('TOTAL_VOTES', 'N/A') }}</div>
+      </div>
+      <div>
+        <div class="stat-label" style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Winner</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--text)">{{ result.get('WINNER_NAME', 'N/A') }}</div>
+        <div style="font-size:.8rem;color:var(--muted)">{{ result.get('WINNER_VOTES', '') }} votes</div>
+      </div>
+      <div>
+        <div class="stat-label" style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Winning Margin</div>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--success)">{{ result.get('WINNING_MARGIN', 'N/A') }}</div>
+      </div>
+      <div>
+        <div class="stat-label" style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Turnout</div>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--text)">{{ result.get('TURNOUT', 'N/A') }}%</div>
+      </div>
+      <div>
+        <div class="stat-label" style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Tie?</div>
+        <div>
+          {% if result.get('IS_TIE') == 'YES' %}
+            <span class="badge badge-amber">Yes — Tie Detected</span>
+          {% else %}
+            <span class="badge badge-green">No Tie</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Raw C++ output -->
+    <details style="margin-top:1.25rem">
+      <summary style="cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted)">
+        View Raw C++ Output
+      </summary>
+      <pre style="margin-top:.75rem;background:#0F172A;color:#A5F3FC;padding:1rem;border-radius:var(--radius);font-size:.8rem;overflow-x:auto;line-height:1.8">{% for k, v in result.items() %}{{ k }}={{ v }}
+{% endfor %}</pre>
+    </details>
+  </div>
+  {% endif %}
+
+  {% endif %}
+
+  <!-- Action buttons -->
+  <div style="margin-top:1.5rem;display:flex;gap:10px;flex-wrap:wrap">
+    <a href="{{ url_for('results') }}"  class="btn btn-primary">📈 View Results</a>
+    <a href="{{ url_for('report') }}"   class="btn btn-outline">📄 Full Report</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline">📊 Dashboard</a>
+  </div>
+</div>
+{% endblock %}

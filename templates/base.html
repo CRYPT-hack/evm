@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}EVS{% endblock %} — Electronic Voting System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="{{ url_for('index') }}" class="nav-brand">
+      <div class="brand-icon">🗳</div>
+      <span>EVS · DM Project</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}"        {% if request.endpoint=='index'        %}class="active"{% endif %}>Home</a></li>
+      <li><a href="{{ url_for('vote') }}"         {% if request.endpoint=='vote'         %}class="active"{% endif %}>Cast Vote</a></li>
+      <li><a href="{{ url_for('results') }}"      {% if request.endpoint=='results'      %}class="active"{% endif %}>Results</a></li>
+      <li><a href="{{ url_for('dashboard') }}"    {% if request.endpoint=='dashboard'    %}class="active"{% endif %}>Dashboard</a></li>
+      <li><a href="{{ url_for('audit') }}"        {% if request.endpoint=='audit'        %}class="active"{% endif %}>Audit Log</a></li>
+      <li><a href="{{ url_for('verification') }}" {% if request.endpoint=='verification' %}class="active"{% endif %}>Verification</a></li>
+      <li><a href="{{ url_for('concepts') }}"     {% if request.endpoint=='concepts'     %}class="active"{% endif %}>Concepts</a></li>
+      <li><a href="{{ url_for('simulation') }}"   {% if request.endpoint=='simulation'   %}class="active"{% endif %}>Simulation</a></li>
+      <li><a href="{{ url_for('report') }}"       {% if request.endpoint=='report'       %}class="active"{% endif %}>Report</a></li>
+      <li><a href="{{ url_for('login') }}" class="nav-vote-btn">Vote Now</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ═══════════════════ FLASH MESSAGES ══════════════════════════════════════ -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-box">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">
+          <span>{{ '✔' if category == 'success' else '✖' if category == 'error' else 'ℹ' }}</span>
+          <span>{{ message }}</span>
+          <button class="flash-close" type="button">✕</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- ═══════════════════ PAGE CONTENT ════════════════════════════════════════ -->
+{% block content %}{% endblock %}
+
+<!-- ═══════════════════ FOOTER ══════════════════════════════════════════════ -->
+<footer class="footer">
+  <strong>Electronic Voting System</strong> — Discrete Mathematics College Project &nbsp;|&nbsp;
+  Python Flask + C++ Verifier &nbsp;|&nbsp; Educational Simulation Only
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
