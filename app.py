@@ -22,6 +22,7 @@ C++ (verifier.cpp) handles:
 import json
 import os
 import random
+import secrets
 import string
 import subprocess
 from datetime import datetime
@@ -30,7 +31,11 @@ from flask import (Flask, flash, jsonify, redirect, render_template,
                    request, session, url_for)
 
 app = Flask(__name__)
-app.secret_key = "evs_discrete_math_2026_secret"
+# The session key signs login cookies, so it must not sit in the source of a
+# public repository. Set EVS_SECRET_KEY for any real deployment; without it a
+# fresh random key is generated per run, which keeps local development working
+# and simply logs everyone out when the server restarts.
+app.secret_key = os.environ.get("EVS_SECRET_KEY") or secrets.token_hex(32)
 
 # ─── File paths ───────────────────────────────────────────────────────────────
 BASE      = os.path.dirname(os.path.abspath(__file__))
